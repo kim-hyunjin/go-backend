@@ -1,9 +1,12 @@
 package restful
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -45,5 +48,35 @@ func TestGetUserInfo(t *testing.T) {
 	assert.NoError(err)
 	assert.Equal(http.StatusOK, res.StatusCode)
 	data, _ := ioutil.ReadAll(res.Body)
-	assert.Contains(string(data), "User Id : 777")
+	assert.Contains(string(data), "No User With ID")
+}
+
+func TestCreateUser(t *testing.T) {
+	assert := assert.New(t)
+
+	mock := httptest.NewServer(NewHandler())
+	defer mock.Close()
+
+	res, err := http.Post(mock.URL + "/users", "application/json", 
+		strings.NewReader(`{"first_name":"hyunjin", "last_name":"kim", "email":"hyunjin1612@gmail.com"}`))
+	
+	assert.NoError(err)
+	assert.Equal(http.StatusCreated, res.StatusCode)
+
+	user := new(User)
+	err = json.NewDecoder(res.Body).Decode(user)
+	assert.NoError(err)
+	assert.NotEqual(0, user.ID)
+
+	id := user.ID
+	res, err = http.Get(mock.URL + "/users/" + strconv.Itoa(id))
+	assert.NoError(err)
+
+	assert.Equal(http.StatusOK, res.StatusCode)
+	user2 := new(User)
+	err = json.NewDecoder(res.Body).Decode(user2)
+	assert.NoError(err)
+	assert.Equal(user.ID, user2.ID)
+	assert.Equal(user.FirstName, user2.FirstName)
+
 }
