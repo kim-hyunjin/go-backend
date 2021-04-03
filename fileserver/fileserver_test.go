@@ -1,4 +1,4 @@
-package main
+package fileserver
 
 import (
 	"bytes"
@@ -17,7 +17,8 @@ func TestUploadFile(t *testing.T) {
 	assert := assert.New(t)
 
 	path := "/Users/hyunjin/Downloads/dice.jpeg"
-	originFile, _ := os.Open(path)
+	originFile, err := os.Open(path)
+	assert.NoError(err)
 	defer originFile.Close()
 
 	os.RemoveAll("./uploads")
