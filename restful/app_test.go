@@ -25,7 +25,7 @@ func TestIndex(t *testing.T) {
 	assert.Equal("hello, world", string(data))
 }
 
-func TestUsers(t *testing.T) {
+func TestUsers_WithoutUsers(t *testing.T) {
 	assert := assert.New(t)
 
 	mock := httptest.NewServer(NewHandler())
@@ -35,7 +35,33 @@ func TestUsers(t *testing.T) {
 	assert.NoError(err)
 	assert.Equal(http.StatusOK, res.StatusCode)
 	data, _ := ioutil.ReadAll(res.Body)
-	assert.Contains(string(data), "Get user info")
+	assert.Contains(string(data), "No Users")
+}
+
+func TestUsers_WithUsers(t *testing.T) {
+	assert := assert.New(t)
+
+	mock := httptest.NewServer(NewHandler())
+	defer mock.Close()
+
+	res, err := http.Post(mock.URL+"/users", "application/json",
+		strings.NewReader(`{"first_name":"hyunjin", "last_name":"kim", "email":"hyunjin1612@gmail.com"}`))
+	assert.NoError(err)
+	assert.Equal(http.StatusCreated, res.StatusCode)
+
+	res, err = http.Post(mock.URL+"/users", "application/json",
+		strings.NewReader(`{"first_name":"jason", "last_name":"park", "email":"jason@gmail.com"}`))
+	assert.NoError(err)
+	assert.Equal(http.StatusCreated, res.StatusCode)
+
+	res, err = http.Get(mock.URL + "/users")
+	assert.NoError(err)
+	assert.Equal(http.StatusOK, res.StatusCode)
+	users := []*User{}
+	err = json.NewDecoder(res.Body).Decode(&users)
+	assert.NoError(err)
+	assert.Equal(2, len(users))
+	
 }
 
 func TestGetUserInfo(t *testing.T) {

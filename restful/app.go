@@ -28,7 +28,19 @@ func indexHandler(rw http.ResponseWriter, r *http.Request) {
 }
 
 func usersHandler(rw http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(rw, "Get user info by /users/:id")
+	if len(userMap) == 0 {
+		rw.WriteHeader(http.StatusOK)
+		fmt.Fprint(rw, "No Users")
+		return
+	}
+	users := []*User{}
+	for _, u := range userMap {
+		users = append(users, u)
+	}
+	data, _ := json.Marshal(users)
+	rw.Header().Add("content-type", "application/json")
+	rw.WriteHeader(http.StatusOK)
+	fmt.Fprint(rw, string(data))
 }
 
 func getUserInfoHandler(rw http.ResponseWriter, r *http.Request) {
