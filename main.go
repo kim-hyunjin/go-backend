@@ -1,7 +1,11 @@
 package main
 
-import "github.com/kim-hyunjin/go-web/fileserver"
+import (
+	"net/http"
+
+	"github.com/kim-hyunjin/go-web/restful"
+)
 
 func main() {
-	fileserver.Start()
+	http.ListenAndServe(":3000", restful.NewHandler())
 }
