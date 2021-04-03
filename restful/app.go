@@ -47,8 +47,8 @@ func getUserInfoHandler(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	rw.Header().Add("content-type", "application/json")
 	rw.WriteHeader(http.StatusOK)
-	rw.Header().Add("Content-Type", "application/json")
 	data, _ := json.Marshal(user)
 	fmt.Fprint(rw, string(data))
 }
@@ -68,9 +68,31 @@ func createUserHandler(rw http.ResponseWriter, r *http.Request) {
 	user.CreatedAt = time.Now()
 	userMap[user.ID] = user
 
+	rw.Header().Add("content-type", "application/json")
 	rw.WriteHeader(http.StatusCreated)
 	data, _ := json.Marshal(user)
 	fmt.Fprint(rw, string(data))
+}
+
+func deleteUserHandler(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		rw.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(rw, err)
+		return
+	}
+
+	_, ok := userMap[id]
+	if !ok {
+		rw.WriteHeader(http.StatusOK)
+		fmt.Fprint(rw, "No User ID With: ", id)
+		return
+	}
+
+	delete(userMap, id)
+	rw.WriteHeader(http.StatusOK)
+	fmt.Fprint(rw, "User ID With: ", id, " Deleted!")
 }
 
 // NewHandler make a new handler
@@ -82,6 +104,7 @@ func NewHandler() http.Handler {
 	mux.HandleFunc("/", indexHandler)
 	mux.HandleFunc("/users", usersHandler).Methods("GET")
 	mux.HandleFunc("/users", createUserHandler).Methods("POST")
-	mux.HandleFunc("/users/{id:[0-9]+}", getUserInfoHandler)
+	mux.HandleFunc("/users/{id:[0-9]+}", getUserInfoHandler).Methods("GET")
+	mux.HandleFunc("/users/{id:[0-9]+}", deleteUserHandler).Methods("DELETE")
 	return mux
 }
