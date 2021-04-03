@@ -112,3 +112,44 @@ func TestDeleteUser(t *testing.T) {
 	data, _ = ioutil.ReadAll(res.Body)
 	assert.Contains(string(data), "User ID With: 1 Deleted!")
 }
+
+func TestUpdateUser(t *testing.T) {
+	assert := assert.New(t)
+
+	mock := httptest.NewServer(NewHandler())
+	defer mock.Close()
+
+	// 업데이트할 유저가 없는 경우
+	req, _ := http.NewRequest("PUT", mock.URL + "/users", 
+		strings.NewReader(`{"id":1, "first_name":"updated", "last_name":"kim", "email":"hyunjin1612@gmail.com"}`))
+	res, err := http.DefaultClient.Do(req)
+	assert.NoError(err)
+	assert.Equal(http.StatusOK, res.StatusCode)
+	data, _ := ioutil.ReadAll(res.Body)
+	assert.Contains(string(data), "No User With ID: 1")
+
+
+	// 유저 생성 후 업데이트하기
+	res, err = http.Post(mock.URL+"/users", "application/json",
+		strings.NewReader(`{"first_name":"hyunjin", "last_name":"kim", "email":"hyunjin1612@gmail.com"}`))
+	assert.NoError(err)
+	assert.Equal(http.StatusCreated, res.StatusCode)
+
+	user := new(User)
+	err = json.NewDecoder(res.Body).Decode(user)
+	assert.NoError(err)
+
+	req, _ = http.NewRequest("PUT", mock.URL + "/users", 
+		strings.NewReader(`{"id":1, "first_name":"updated"}`))
+	res, err = http.DefaultClient.Do(req)
+	assert.NoError(err)
+	assert.Equal(http.StatusOK, res.StatusCode)
+
+	updatedUser := new(User)
+	err = json.NewDecoder(res.Body).Decode(updatedUser)
+	assert.NoError(err)
+	assert.NotEqual(0, updatedUser.ID)
+	assert.Equal("updated", updatedUser.FirstName)
+	assert.Equal(user.LastName, updatedUser.LastName)
+
+}
