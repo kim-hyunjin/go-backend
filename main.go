@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kim-hyunjin/go-web/restful"
+	"github.com/kim-hyunjin/go-web/decorator_pattern"
 )
+
+
 
 func main() {
 	fmt.Println("Server Starting...")
-	http.ListenAndServe(":3000", restful.NewHandler())
+	mux := decorator_pattern.NewHandler()
+
+	http.ListenAndServe(":3000", mux)
 }
