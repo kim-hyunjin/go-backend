@@ -19,3 +19,9 @@ type User struct {
 
 - github.com/smartystreets/goconvey : 파일이 변경될때마다 자동을 테스트를 수행해준다.
 - github.com/stretchr/testify : assert 패키지의 메소드를 사용하면 쉽게 테스트할 수 있다.
+
+## Web socket, Event source
+
+https://developer.mozilla.org/ko/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications
+
+https://developer.mozilla.org/ko/docs/Web/API/EventSource

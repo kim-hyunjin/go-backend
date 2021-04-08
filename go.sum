@@ -1,3 +1,5 @@
+github.com/antage/eventsource v0.0.0-20190412115600-84b661236871 h1:CU/EFaNIixooGaewG9cX4BShXURU/ejdC/r0Ly0jESo=
+github.com/antage/eventsource v0.0.0-20190412115600-84b661236871/go.mod h1:WOB/cuaphqWnO64ntuJ3CbpM+kDsKaQp1aeIB4AuXGI=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385/go.mod h1:0vRUJqYpeSZifjYj7uP3BG/gKcuzL9xWVV/Y+cK33KM=
