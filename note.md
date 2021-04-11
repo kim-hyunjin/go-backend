@@ -25,3 +25,7 @@ type User struct {
 https://developer.mozilla.org/ko/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications
 
 https://developer.mozilla.org/ko/docs/Web/API/EventSource
+
+# 3 tier web
+
+Front - Back - DB
