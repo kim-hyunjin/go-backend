@@ -40,3 +40,10 @@ go get github.com/mattn/go-sqlite3
 
 - 위 라이브러리는 cgo 패키지다. 그래서 c 표준 컴파일러가 필요하다. sqllite3가 c로 만들어져 있기 때문.
 - 윈도우의 경우 https://jmeubank.github.io/tdm-gcc/ 여기서 gcc를 다운받으면 된다.
+
+# 배포
+
+- domain 할당
+- DNS server(domain과 IP를 매핑해줌)에 내 도메인 등록
+- public IP가 필요하다.
+  - 웹호스팅 받기(public ip를 할당받은 회사로부터 임대) : 옛날에는 cafe24같은 회사로부터 물리적인 컴퓨터를 임대했다. 오늘날엔 가상화기술의 발달로 하나의 물리 컴퓨터 위에 여러 가상머신을 만든다. 그래서 가상머신을 임대하는 형태로 바뀌었다. => 클라우드 서비스
