@@ -2,15 +2,19 @@ package todoapp
 
 import (
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/kim-hyunjin/go-web/todoapp/model"
 	"github.com/unrolled/render"
+	"github.com/urfave/negroni"
 )
 
+var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 var rd *render.Render = render.New()
-var dbHandler *model.DbHandler
 
 type Success struct {
 	Success bool `json:"success"`
@@ -19,6 +23,19 @@ type Success struct {
 type AppHandler struct {
 	http.Handler // http.Handler를 embed
 	db model.DbHandler
+}
+
+func getSessionId(r *http.Request) string {
+	session, err := store.Get(r, "session")
+	if err != nil {
+		return ""
+	}
+
+	val := session.Values["id"]
+	if val == nil {
+		return ""
+	}
+	return val.(string)
 }
 
 func (a *AppHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,10 +80,33 @@ func (a *AppHandler) Close() {
 	a.db.Close()
 }
 
+func CheckSignin(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	// if request URL is /signin then next()
+	if strings.Contains(r.URL.Path, "/signin") || strings.Contains(r.URL.Path, "/auth") {
+		next(rw, r)
+		return
+	}
+
+	// if user already signed in
+	sessionId := getSessionId(r)
+	if sessionId != "" {
+		next(rw, r)
+		return
+	}
+
+	// if not user sign in
+	// redirect signin.html
+	http.Redirect(rw, r, "/signin.html", http.StatusTemporaryRedirect)
+}
+
 func MakeHandler(filepath string) *AppHandler {
 	mux := mux.NewRouter()
+
+	n := negroni.New(negroni.NewRecovery(), negroni.NewLogger(), negroni.HandlerFunc(CheckSignin), negroni.NewStatic(http.Dir("public")))
+	n.UseHandler(mux)
+
 	a := &AppHandler{
-		Handler: mux,
+		Handler: n,
 		db: model.NewDbHandler(filepath),
 	}
 	mux.HandleFunc("/", a.indexHandler)
