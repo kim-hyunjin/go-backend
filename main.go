@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kim-hyunjin/go-web/decorator_pattern"
+	todoapp "github.com/kim-hyunjin/go-web/todoapp"
+	"github.com/urfave/negroni"
 )
 
-
-
 func main() {
-	fmt.Println("Server Starting...")
-	mux := decorator_pattern.NewHandler()
-
-	http.ListenAndServe(":3000", mux)
+	app := todoapp.MakeHandler("./test.db")
+	defer app.Close()
+	n := negroni.Classic()
+	n.UseHandler(app)
+	fmt.Println("App Started!")
+	http.ListenAndServe(":3000", n)
 }

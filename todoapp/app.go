@@ -1,4 +1,4 @@
-package main
+package todoapp
 
 import (
 	"net/http"
@@ -74,6 +74,8 @@ func MakeHandler(filepath string) *AppHandler {
 	mux.HandleFunc("/todos", a.addTodoHandler).Methods("POST")
 	mux.HandleFunc("/todos/{id:[0-9]+}", a.deleteTodoHandler).Methods("DELETE")
 	mux.HandleFunc("/complete-todo/{id:[0-9]+}", a.completeTodoHandler).Methods("GET")
+	mux.HandleFunc("/auth/google/login", googleLoginHandler)
+	mux.HandleFunc("/auth/google/callback", googleOAuthCallbackHandler)
 
 	return a
 }
