@@ -5,8 +5,8 @@ import "time"
 var handler dbHandler
 
 func init() {
-	handler = newMemoryHandler()
-	// handler = new SqliteHandler()
+	// handler = newMemoryHandler()
+	handler = newSqliteHandler()
 }
 
 type Todo struct {
