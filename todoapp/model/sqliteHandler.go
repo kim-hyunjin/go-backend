@@ -74,8 +74,8 @@ func (s *sqliteHandler) Close() {
 	s.db.Close()
 }
 
-func newSqliteHandler() DbHandler {
-	database, err := sql.Open("sqlite3", "./test.db")
+func newSqliteHandler(filepath string) DbHandler {
+	database, err := sql.Open("sqlite3", filepath)
 	if err != nil {
 		panic(err)
 	}

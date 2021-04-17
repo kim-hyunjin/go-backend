@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	app := MakeHandler()
+	app := MakeHandler("./test.db")
 	defer app.Close()
 	n := negroni.Classic()
 	n.UseHandler(app.Handler)

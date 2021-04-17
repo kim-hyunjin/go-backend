@@ -44,9 +44,10 @@ func deleteTest(ts *httptest.Server, ass *assert.Assertions, id int) {
 }
 
 func TestTodos(t *testing.T) {
-	os.Remove("./test.db")
+	filepath := "./test.db"
+	os.Remove(filepath)
 	ass := assert.New(t)
-	app := MakeHandler()
+	app := MakeHandler(filepath)
 	ts := httptest.NewServer(app)
 	defer ts.Close()
 
