@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strconv"
 	"testing"
 
@@ -43,8 +44,10 @@ func deleteTest(ts *httptest.Server, ass *assert.Assertions, id int) {
 }
 
 func TestTodos(t *testing.T) {
+	os.Remove("./test.db")
 	ass := assert.New(t)
-	ts := httptest.NewServer(MakeHandler())
+	app := MakeHandler()
+	ts := httptest.NewServer(app)
 	defer ts.Close()
 
 	todo := postTest(ts, ass, "Test todo")
