@@ -2,7 +2,6 @@ package todoapp
 
 import (
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 
@@ -13,7 +12,7 @@ import (
 	"github.com/urfave/negroni"
 )
 
-var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+var Store *sessions.CookieStore
 var rd *render.Render = render.New()
 
 type Success struct {
@@ -25,8 +24,8 @@ type AppHandler struct {
 	db model.DbHandler
 }
 
-func getSessionId(r *http.Request) string {
-	session, err := store.Get(r, "session")
+var getSessionId = func (r *http.Request) string {
+	session, err := Store.Get(r, "session")
 	if err != nil {
 		return ""
 	}
@@ -43,13 +42,15 @@ func (a *AppHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AppHandler) getTodosHandler(w http.ResponseWriter, r *http.Request) {
-	list := a.db.GetTodos()
+	sessionId := getSessionId(r)
+	list := a.db.GetTodos(sessionId)
 	rd.JSON(w, http.StatusOK, list)
 }
 
 func (a *AppHandler) addTodoHandler(w http.ResponseWriter, r *http.Request) {
-	value := r.FormValue("name")
-	todo := a.db.AddTodo(value)
+	name := r.FormValue("name")
+	sessionId := getSessionId(r)
+	todo := a.db.AddTodo(name, sessionId)
 	rd.JSON(w, http.StatusCreated, todo)
 }
 

@@ -34,20 +34,21 @@ func generateStateOauthCookie(w http.ResponseWriter) string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	state := base64.URLEncoding.EncodeToString(b)
-	cookie := http.Cookie{
+	cookie := &http.Cookie{
 		Name:"oauthstate", 
 		Value: state, 
 		Expires: time.Now().Add(1 * 24 * time.Hour),
 	}
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, cookie)
 	return state
 }
 
 func googleOAuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	oauthstate, _ := r.Cookie("oauthstate")
+
 	if r.FormValue("state") != oauthstate.Value {
-		log.Printf("invalid google oauth state cookie: %s, state:%s\n", oauthstate.Value, r.FormValue("state"))
 		errMsg := fmt.Sprintf("invalid google oauth state cookie: %s, state:%s\n", oauthstate.Value, r.FormValue("state"))
+		log.Printf(errMsg)
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
@@ -66,7 +67,7 @@ func googleOAuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	session, err := store.Get(r, "session")
+	session, err := Store.Get(r, "session")
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

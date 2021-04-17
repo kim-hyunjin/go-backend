@@ -44,6 +44,10 @@ func deleteTest(ts *httptest.Server, ass *assert.Assertions, id int) {
 }
 
 func TestTodos(t *testing.T) {
+	getSessionId = func (r *http.Request) string {
+		return "testSessionId"
+	}
+
 	filepath := "./test.db"
 	os.Remove(filepath)
 	ass := assert.New(t)
