@@ -29,3 +29,14 @@ https://developer.mozilla.org/ko/docs/Web/API/EventSource
 # 3 tier web
 
 Front - Back - DB
+
+# DB 사용하기
+
+- SQLite3
+
+```
+go get github.com/mattn/go-sqlite3
+```
+
+- 위 라이브러리는 cgo 패키지다. 그래서 c 표준 컴파일러가 필요하다. sqllite3가 c로 만들어져 있기 때문.
+- 윈도우의 경우 https://jmeubank.github.io/tdm-gcc/ 여기서 gcc를 다운받으면 된다.
